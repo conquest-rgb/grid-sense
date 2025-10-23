@@ -266,18 +266,20 @@ git push origin feature/your-feature-name
 
 ---
 
-## 👥 Team
+## Team
 
 **AI Avengers** - Moringa School Data Science Bootcamp
 
-- [Team Member 1]
-- [Team Member 2]
-- [Team Member 3]
-- [Team Member 4]
+- [HUldah Rotich]
+- [Maureen Ngaire]
+- [Nicole Kagendo]
+- [Joshua Kiluu]
+- [John Mungai]
+- [Alvin Kipleting
 
 ---
 
-## 📄 License
+##  License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
