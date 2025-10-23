@@ -122,7 +122,7 @@ pip install -r requirements-lock.txt
 ### Step 4: Verify Installation
 
 ```bash
-python -c "import pandas, geopandas, lightgbm, streamlit; print('✅ All packages installed successfully!')"
+python -c "import pandas, geopandas, lightgbm, streamlit; print(' All packages installed successfully!')"
 ```
 
 ### Step 5: Configure Environment Variables
