@@ -205,3 +205,82 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+# ========================================
+# DATA SCIENCE / ML SPECIFIC
+# ========================================
+
+# === LARGE DATA FILES ===
+*.csv
+*.xlsx
+*.xls
+*.parquet
+*.feather
+*.h5
+*.hdf5
+*.pkl
+*.pickle
+*.joblib
+*.npy
+*.npz
+
+# === MODEL FILES ===
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.bin
+*.onnx
+*.pb
+*.tflite
+*.keras
+*.h5
+
+# === LARGE MEDIA FILES ===
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.bmp
+*.tiff
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.pdf
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+
+# === DATA DIRECTORIES ===
+data/raw/*
+data/processed/*
+data/external/*
+outputs/*
+models/saved/*
+models/checkpoints/*
+
+# Keep directory structure
+!**/.gitkeep
+!**/README.md
+
+# === SECRETS & CREDENTIALS ===
+*.key
+*.pem
+credentials.json
+secrets.yaml
+config/secrets/*
+
+# === LOGS & OUTPUTS ===
+logs/
+*.log
+wandb/
+mlruns/
+
+# === OS & IDE (additional) ===
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
