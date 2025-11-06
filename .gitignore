@@ -284,3 +284,71 @@ Thumbs.db
 desktop.ini
 .vscode/
 .idea/
+
+# ========================================
+# DATA SCIENCE / ML SPECIFIC
+# ========================================
+
+# === LARGE DATA FILES ===
+*.csv
+*.xlsx
+*.xls
+*.parquet
+*.feather
+*.h5
+*.hdf5
+*.pkl
+*.pickle
+*.joblib
+*.npy
+*.npz
+
+# === MODEL FILES ===
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.bin
+*.onnx
+*.pb
+*.keras
+
+# === MEDIA FILES ===
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.mp4
+*.pdf
+*.zip
+*.tar.gz
+
+# === YOUR DATA DIRECTORIES ===
+data/Data/*
+data/cleaned_datasets/*
+outputs/*
+models/saved/*
+
+# Keep structure files
+!**/.gitkeep
+!**/README.md
+
+# === SECRETS ===
+*.key
+*.pem
+credentials.json
+secrets.yaml
+.env
+
+# === LOGS ===
+*.log
+logs/
+wandb/
+mlruns/
+
+# === OS/IDE ===
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
