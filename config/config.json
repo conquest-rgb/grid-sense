@@ -1,0 +1,9 @@
+{
+  "model_version": "v20251107_0700",
+  "last_updated": "2025-11-09",
+  "counties_count": 47,
+  "forecast_horizon_hours": 48,
+  "risk_thresholds": {
+    "high": 0.7,
+    "medium": 0.4,
+    "low": 0.0}} 
