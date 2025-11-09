@@ -1,0 +1,188 @@
+
+================================================================================
+                        NDVI DATASET DOCUMENTATION
+                  Kenya County Vegetation Index (2024-2025)
+================================================================================
+
+Date Generated: October 27, 2025
+Data Source: NASA MODIS MOD13A1 via Google Earth Engine
+File Location: D:\DS_projects\phase_4\data\ndvi_timeseries.parquet
+
+================================================================================
+1. DATASET OVERVIEW
+================================================================================
+
+Rows:               1,927
+Columns:            6
+Counties:           47 (all Kenya counties)
+Date Range:         2024-01-01 to 2025-09-30
+Time Span:          638 days (21 months)
+Frequency:          16-day intervals (41 measurements per county)
+File Size:          94 KB (Parquet), 188 KB (CSV)
+Missing Values:     0 (100% complete)
+
+================================================================================
+2. COLUMN DESCRIPTIONS
+================================================================================
+
+Column Name    | Type     | Description
+---------------|----------|--------------------------------------------------
+COUNTY         | String   | Name of Kenyan county (47 unique values)
+               |          | Examples: Nairobi, Mombasa, Nakuru
+               |          |
+date           | DateTime | Date of NDVI measurement (16-day intervals)
+               |          | Range: 2024-01-01 to 2025-09-30
+               |          |
+ndvi_mean      | Float    | Average vegetation index across county (0-1)
+               |          | 0.0-0.2 = Bare soil/water
+               |          | 0.2-0.4 = Sparse vegetation (arid)
+               |          | 0.4-0.6 = Moderate vegetation
+               |          | 0.6-0.8 = Dense vegetation (forests/crops)
+               |          | 0.8-1.0 = Very dense (healthy forests)
+               |          |
+ndvi_std       | Float    | Standard deviation of NDVI within county
+               |          | High values = diverse terrain (forests + farms)
+               |          | Low values = uniform land cover
+               |          |
+ndvi_min       | Float    | Minimum NDVI value in county
+               |          | Identifies bare areas, water bodies, urban zones
+               |          |
+ndvi_max       | Float    | Maximum NDVI value in county
+               |          | Identifies densest vegetation (peak risk areas)
+
+================================================================================
+3. STATISTICAL SUMMARY
+================================================================================
+
+NDVI_MEAN Statistics:
+  Minimum:       0.190 (Marsabit - most arid)
+  25th %ile:     0.452
+  Median:        0.592
+  75th %ile:     0.696
+  Maximum:       0.820 (Bomet - most vegetated)
+  Mean:          0.564
+  Std Dev:       0.157
+
+NDVI_STD Statistics:
+  Minimum:       0.028
+  Median:        0.124
+  Maximum:       0.331
+  Mean:          0.125
+
+Records per County: 41 (consistent across all counties)
+
+================================================================================
+4. GEOGRAPHIC PATTERNS
+================================================================================
+
+HIGH VEGETATION (NDVI > 0.70) - 8 Counties:
+  Bomet (0.779), Nandi (0.762), Nyamira (0.761), Kericho (0.750)
+  Location: Western Kenya highlands
+  Characteristics: Tea/coffee plantations, forests, high rainfall
+  Outage Risk: Tree fall on power lines
+
+MEDIUM VEGETATION (0.45-0.70) - 28 Counties:
+  Includes: Nairobi, Nakuru, Meru, Kiambu
+  Location: Central Kenya, Rift Valley
+  Characteristics: Mixed agriculture, moderate rainfall
+  Outage Risk: Seasonal vegetation growth
+
+LOW VEGETATION (< 0.45) - 11 Counties:
+  Marsabit (0.268), Turkana (0.307), Wajir (0.315), Garissa (0.382)
+  Location: Northern/Eastern Kenya
+  Characteristics: Arid/semi-arid, sparse vegetation
+  Outage Risk: Dust storms, equipment heat stress
+
+================================================================================
+5. SAMPLE DATA
+================================================================================
+
+COUNTY     | date       | ndvi_mean | ndvi_std | ndvi_min  | ndvi_max
+-----------|------------|-----------|----------|-----------|----------
+Baringo    | 2024-01-01 | 0.482     | 0.155    | -0.199    | 0.945
+Baringo    | 2024-01-17 | 0.482     | 0.159    | -0.199    | 0.895
+Bomet      | 2024-01-01 | 0.835     | 0.096    | 0.289     | 0.967
+Marsabit   | 2024-01-01 | 0.245     | 0.087    | -0.198    | 0.682
+Nairobi    | 2024-01-01 | 0.621     | 0.142    | -0.089    | 0.912
+
+================================================================================
+6. DATA USAGE FOR POWER OUTAGE PREDICTION
+================================================================================
+
+WHY NDVI MATTERS:
+  • High NDVI = More trees = Higher risk of tree fall on lines
+  • Low NDVI = Less buffer = Higher risk from dust/sand storms
+  • NDVI variability = Terrain complexity = Harder maintenance
+  • Seasonal NDVI changes = Predict maintenance needs
+
+HOW TO USE:
+  1. Merge with hourly weather data (forward-fill NDVI values)
+  2. Create interaction features (NDVI × rainfall, NDVI × wind)
+  3. Calculate NDVI change rates (vegetation growth speed)
+  4. Flag peak vegetation periods (highest risk times)
+
+EXPECTED FEATURES IN MODEL:
+  • ndvi_mean - Base vegetation level
+  • ndvi_max - Peak vegetation (highest risk)
+  • ndvi_change_rate - Growth/decline speed
+  • is_high_vegetation - Binary flag (NDVI > 0.7)
+  • ndvi_seasonal_deviation - Abnormal vegetation
+
+================================================================================
+7. DATA QUALITY
+================================================================================
+
+✓ Completeness:    100% (no missing values)
+✓ Coverage:        All 47 counties, full date range
+✓ Consistency:     Exactly 41 measurements per county
+✓ Validity:        All NDVI values in valid range (-0.2 to 1.0)
+✓ Accuracy:        Results match known land cover patterns
+✓ Seasonality:     Full seasonal cycle captured
+
+No data cleaning required - ready to use!
+
+================================================================================
+8. TECHNICAL SPECIFICATIONS
+================================================================================
+
+Satellite:         NASA Terra/Aqua MODIS
+Product:           MOD13A1 (16-day NDVI Composite)
+Spatial Res:       500 meters (aggregated to county level)
+Temporal Res:      16-day composite
+Processing:        Google Earth Engine
+Cloud Removal:     Automatic (built into MODIS product)
+Atmospheric Corr:  Yes (standard MODIS processing)
+
+NDVI Formula:      (NIR - Red) / (NIR + Red)
+  NIR = Near-Infrared reflectance (vegetation reflects)
+  Red = Red light reflectance (vegetation absorbs)
+
+
+
+================================================================================
+10. QUICK REFERENCE
+================================================================================
+
+DATASET NAME:      ndvi_timeseries.parquet
+FILE LOCATION:     D:\DS_projects\phase_4\data\
+FILE SIZE:         94 KB
+FORMAT:            Parquet (binary), CSV (text)
+ENCODING:          UTF-8
+ROWS:              1,927
+COLUMNS:           6
+COUNTIES:          47
+TIME PERIOD:       Jan 2024 - Sep 2025
+FREQUENCY:         Every 16 days
+PER COUNTY:        41 measurements
+COMPLETENESS:      100%
+
+KEY COLUMNS:
+  • COUNTY (identifier)
+  • date (temporal key)
+  • ndvi_mean (primary predictor)
+  • ndvi_max (risk indicator)
+
+                              END OF REPORT
+
+Generated: October 27, 2025
+Project: Kenya Power Outage Prediction Model
