@@ -191,54 +191,54 @@ def recommend_actions(forecast_df, persona):
     recommendations = [] 
     
     if max_risk_level == "HIGH":
-        recommendations.append(f"🚨 **CRITICAL ALERT:** HIGH risk window detected for {peak_hours_str}")
+        recommendations.append(f" **CRITICAL ALERT:** HIGH risk window detected for {peak_hours_str}")
     elif max_risk_level == "MEDIUM":
-        recommendations.append(f"⚠️ **CAUTION:** MEDIUM risk expected for {peak_hours_str}")
+        recommendations.append(f" **CAUTION:** MEDIUM risk expected for {peak_hours_str}")
     else:
-        recommendations.append("✅ **ALL CLEAR:** Low grid stress expected in next 48 hours")
+        recommendations.append(" **ALL CLEAR:** Low grid stress expected in next 48 hours")
     
     # Persona-specific recommendations
     if persona == "SME / Factory":
         if max_risk_level == "HIGH":
             recommendations.extend([
-                "🏭 **Production:** Complete all high-energy operations before peak risk window",
-                "🔋 **Equipment:** Fully charge all battery-operated devices and forklifts",
-                "📋 **Planning:** Reschedule critical production runs outside high-risk period",
-                "⚡ **Backup:** Test generator and ensure adequate fuel supply"
+                " **Production:** Complete all high-energy operations before peak risk window",
+                " **Equipment:** Fully charge all battery-operated devices and forklifts",
+                " **Planning:** Reschedule critical production runs outside high-risk period",
+                " **Backup:** Test generator and ensure adequate fuel supply"
             ])
     
     elif persona == "Clinic / Cold-Chain":
         if max_risk_level == "HIGH":
             recommendations.extend([
-                "🏥 **IMMEDIATE ACTION:** Test backup generator NOW and verify fuel levels",
-                "💉 **Cold Chain:** Consolidate vaccines into primary battery-backed units",
-                "🚑 **Operations:** Postpone non-urgent elective procedures during risk window",
-                "🌡️ **Monitoring:** Activate temperature logging on all refrigeration units"
+                " **IMMEDIATE ACTION:** Test backup generator NOW and verify fuel levels",
+                " **Cold Chain:** Consolidate vaccines into primary battery-backed units",
+                " **Operations:** Postpone non-urgent elective procedures during risk window",
+                " **Monitoring:** Activate temperature logging on all refrigeration units"
             ])
     
     elif persona == "Telecom Site":
         if max_risk_level == "HIGH":
             recommendations.extend([
-                "📡 **CRITICAL:** Verify battery bank charge status across all sites",
-                "⛽ **Fueling:** Priority refuel for sites below 24h generator runtime",
-                "🎯 **Monitoring:** Alert NOC to watch county alarms during risk window",
-                "🔧 **Maintenance:** Position field crews in county for rapid response"
+                " **CRITICAL:** Verify battery bank charge status across all sites",
+                " **Fueling:** Priority refuel for sites below 24h generator runtime",
+                " **Monitoring:** Alert NOC to watch county alarms during risk window",
+                " **Maintenance:** Position field crews in county for rapid response"
             ])
     
     elif persona == "Household":
         if max_risk_level == "HIGH":
             recommendations.extend([
-                "🔌 **Charging:** Charge all phones, laptops, and power banks immediately",
-                "💡 **Lighting:** Prepare flashlights and check batteries",
-                "🍳 **Meals:** Cook and store meals before risk window",
-                "🌡️ **Temperature:** Pre-cool refrigerator, minimize door openings"
+                " **Charging:** Charge all phones, laptops, and power banks immediately",
+                " **Lighting:** Prepare flashlights and check batteries",
+                " **Meals:** Cook and store meals before risk window",
+                " **Temperature:** Pre-cool refrigerator, minimize door openings"
             ])
     
     recommendations.append(f"\n📊 **Average Risk Level:** {avg_prob:.1%} over next 48 hours")
     return recommendations
 
 
-# ==================== MAIN APP ====================
+#  MAIN APP
 
 # Load resources
 model, preprocessor, config, counties = load_models_and_config()
@@ -263,7 +263,7 @@ if 'selected_persona' not in st.session_state:
         st.session_state['selected_persona'] = None  # ← CHANGED TO None
 
 
-# ==================== SIDEBAR ====================
+# SIDEBAR 
 
 st.sidebar.title("⚡ GridSense")
 st.sidebar.markdown("**48-Hour Grid Risk Forecaster**")
@@ -273,7 +273,7 @@ st.sidebar.markdown("---")
 selected_county = st.sidebar.selectbox(
     "🗺️ Select County",
     options=["-- Select County --"] + counties,  # ← ADD THIS
-    index=0 if st.session_state['selected_county'] is None else counties.index(st.session_state['selected_county']) + 1  # ← CHANGE THIS
+    index=0 if st.session_state['selected_county'] is None else counties.index(st.session_state['selected_county']) + 1 
 )
 
 # Only update if a valid county is selected
@@ -326,7 +326,7 @@ if st.session_state['selected_county'] and st.session_state['selected_persona']:
     col1, col2 = st.sidebar.columns(2)
 
     with col1:
-        if st.button("📱 Generate QR", use_container_width=True):
+        if st.button(" Generate QR", use_container_width=True):
             current_url = get_shareable_url(selected_county, persona)
             st.session_state['qr_buffer'] = generate_qr_code(current_url)
             st.session_state['qr_generated'] = True
@@ -334,7 +334,7 @@ if st.session_state['selected_county'] and st.session_state['selected_persona']:
 
     with col2:
         if st.session_state.get('qr_generated'):
-            if st.button("❌ Clear", use_container_width=True):
+            if st.button(" Clear", use_container_width=True):
                 st.session_state.pop('qr_generated', None)
                 st.session_state.pop('qr_buffer', None)
                 st.rerun()
@@ -342,10 +342,10 @@ if st.session_state['selected_county'] and st.session_state['selected_persona']:
     # Display QR code
     if st.session_state.get('qr_generated') and st.session_state.get('qr_buffer'):
         st.sidebar.image(st.session_state['qr_buffer'], use_container_width=True)
-        st.sidebar.caption(f"📍 {selected_county.title()} | 👤 {persona}")
+        st.sidebar.caption(f" {selected_county.title()} | 👤 {persona}")
         
         st.sidebar.download_button(
-            label="💾 Download QR",
+            label=" Download QR",
             data=BytesIO(st.session_state['qr_buffer'].getvalue()),
             file_name=f"gridsense_{selected_county}_{persona.replace(' ', '_').replace('/', '_')}.png",
             mime="image/png",
@@ -365,7 +365,7 @@ st.sidebar.info(
 )
 
 
-# ==================== MAIN CONTENT ====================
+#  MAIN CONTENT 
 
 st.title("⚡ GridSense: Power Outage Risk Forecaster")
 st.markdown(f"### 48-Hour Forecast for **{selected_county.title()}** County")
@@ -398,7 +398,7 @@ with col4:
 st.markdown("---")
 
 # Risk timeline chart
-st.subheader("📈 48-Hour Risk Timeline")
+st.subheader(" 48-Hour Risk Timeline")
 
 fig = go.Figure()
 fig.add_trace(go.Scatter(
@@ -428,7 +428,7 @@ st.plotly_chart(fig, use_container_width=True)
 col1, col2 = st.columns(2)
 
 with col1:
-    st.subheader("📊 Risk Level Distribution")
+    st.subheader(" Risk Level Distribution")
     risk_counts = forecast_df['risk_level'].value_counts()
     
     fig_pie = px.pie(
@@ -443,7 +443,7 @@ with col1:
     st.plotly_chart(fig_pie, use_container_width=True)
 
 with col2:
-    st.subheader("⏰ Hourly Risk Levels")
+    st.subheader(" Hourly Risk Levels")
     forecast_df['hour_of_day'] = forecast_df['hour'].dt.hour
     forecast_df['day'] = forecast_df['hour'].dt.day_name()
     
@@ -484,14 +484,3 @@ with st.expander("📋 View Detailed Hourly Forecast"):
     
     st.dataframe(display_df, use_container_width=True, height=400)
 
-# Footer
-st.markdown("---")
-st.markdown(
-    """
-    <div style='text-align: center; color: #666; font-size: 0.9em;'>
-        <p><strong>GridSense</strong> | Powered by Machine Learning | Data updated hourly</p>
-        <p>⚠️ This is a predictive tool. Always follow official utility communications.</p>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
