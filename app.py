@@ -234,7 +234,7 @@ def recommend_actions(forecast_df, persona):
                 " **Temperature:** Pre-cool refrigerator, minimize door openings"
             ])
     
-    recommendations.append(f"\n📊 **Average Risk Level:** {avg_prob:.1%} over next 48 hours")
+    recommendations.append(f"\n **Average Risk Level:** {avg_prob:.1%} over next 48 hours")
     return recommendations
 
 
@@ -288,7 +288,7 @@ else:  # ← ADD THIS
 # Persona selection
 persona_options = ["SME / Factory", "Clinic / Cold-Chain", "Telecom Site", "Household"]
 persona = st.sidebar.selectbox(
-    "👤 Select Your Profile",
+    " Select Your Profile",
     options=["-- Select Profile --"] + persona_options,  # ← ADD THIS
     index=0 if st.session_state['selected_persona'] is None else persona_options.index(st.session_state['selected_persona']) + 1  # ← CHANGE THIS
 )
@@ -310,7 +310,7 @@ st.markdown(dark_mode_css if dark_mode else light_mode_css, unsafe_allow_html=Tr
 # Share section (only show if both county and persona are selected)
 if st.session_state['selected_county'] and st.session_state['selected_persona']:
     st.sidebar.markdown("---")
-    st.sidebar.markdown("### 📤 Share this Forecast")
+    st.sidebar.markdown("### Share this Forecast")
 
     shareable_url = get_shareable_url(selected_county, persona)
 
@@ -320,7 +320,7 @@ if st.session_state['selected_county'] and st.session_state['selected_persona']:
         key="share_url",
         label_visibility="collapsed"
     )
-    st.sidebar.caption("👆 Copy this link to share")
+    st.sidebar.caption(" Copy this link to share")
 
     # QR Code generation
     col1, col2 = st.sidebar.columns(2)
@@ -351,25 +351,20 @@ if st.session_state['selected_county'] and st.session_state['selected_persona']:
             mime="image/png",
             use_container_width=True
         )
-# ← THE IF STATEMENT ENDS HERE
-
-st.sidebar.markdown("---")
-st.sidebar.info(
-    "GridSense uses machine learning to predict power grid stress "
-    "48 hours ahead, helping you plan and prepare for potential outages."
-)
-st.sidebar.markdown("---")
-st.sidebar.info(
-    "GridSense uses machine learning to predict power grid stress "
-    "48 hours ahead, helping you plan and prepare for potential outages."
-)
-
 
 #  MAIN CONTENT 
 
+# Check if both county and persona are selected
+if not st.session_state['selected_county'] or not st.session_state['selected_persona']:
+    st.info(" Please select a county and profile from the sidebar to view the forecast.")
+    st.stop()
+
+# Now we can safely use these variables
+selected_county = st.session_state['selected_county']
+persona = st.session_state['selected_persona']
+
 st.title("⚡ GridSense: Power Outage Risk Forecaster")
 st.markdown(f"### 48-Hour Forecast for **{selected_county.title()}** County")
-
 # Generate forecast
 with st.spinner("Generating forecast..."):
     forecast_df = get_county_forecast(selected_county, final_df, model, hours_ahead=48)
@@ -466,7 +461,7 @@ with col2:
 st.markdown("---")
 
 # Recommendations
-st.subheader(f"💡 Recommended Actions for {persona}")
+st.subheader(f" Recommended Actions for {persona}")
 recommendations = recommend_actions(forecast_df, persona)
 
 for rec in recommendations:
@@ -475,7 +470,7 @@ for rec in recommendations:
 st.markdown("---")
 
 # Detailed forecast table
-with st.expander("📋 View Detailed Hourly Forecast"):
+with st.expander(" View Detailed Hourly Forecast"):
     display_df = forecast_df[['hour', 'risk_probability', 'risk_level']].copy()
     display_df['Time'] = display_df['hour'].dt.strftime('%Y-%m-%d %H:%M')
     display_df['Risk %'] = (display_df['risk_probability'] * 100).round(1)
