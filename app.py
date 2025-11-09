@@ -188,7 +188,7 @@ def recommend_actions(forecast_df, persona):
     high_risk_hours = forecast_df[forecast_df['risk_level'] == 'HIGH']
     peak_hours_str = ', '.join(high_risk_hours['hour'].dt.strftime('%I %p').tolist()[:3]) if len(high_risk_hours) > 0 else "None identified"
     
-    recommendations = []
+    recommendations = [] 
     
     if max_risk_level == "HIGH":
         recommendations.append(f"🚨 **CRITICAL ALERT:** HIGH risk window detected for {peak_hours_str}")
@@ -250,17 +250,17 @@ query_params = st.query_params
 if 'selected_county' not in st.session_state:
     if 'county' in query_params:
         url_county = query_params['county'].lower()
-        st.session_state['selected_county'] = url_county if url_county in counties else (counties[0] if counties else "nairobi")
+        st.session_state['selected_county'] = url_county if url_county in counties else None
     else:
-        st.session_state['selected_county'] = "nairobi" if "nairobi" in counties else counties[0]
+        st.session_state['selected_county'] = None  # ← CHANGED TO None
 
 if 'selected_persona' not in st.session_state:
     persona_options = ["SME / Factory", "Clinic / Cold-Chain", "Telecom Site", "Household"]
     if 'persona' in query_params:
         url_persona = query_params['persona'].replace('_', ' ').replace('%2F', '/')
-        st.session_state['selected_persona'] = url_persona if url_persona in persona_options else "Household"
+        st.session_state['selected_persona'] = url_persona if url_persona in persona_options else None
     else:
-        st.session_state['selected_persona'] = "Household"
+        st.session_state['selected_persona'] = None  # ← CHANGED TO None
 
 
 # ==================== SIDEBAR ====================
@@ -272,77 +272,92 @@ st.sidebar.markdown("---")
 # County selection
 selected_county = st.sidebar.selectbox(
     "🗺️ Select County",
-    options=counties,
-    index=counties.index(st.session_state['selected_county'])
+    options=["-- Select County --"] + counties,  # ← ADD THIS
+    index=0 if st.session_state['selected_county'] is None else counties.index(st.session_state['selected_county']) + 1  # ← CHANGE THIS
 )
 
-if selected_county != st.session_state['selected_county']:
-    st.session_state['selected_county'] = selected_county
-    st.session_state.pop('qr_generated', None)
-    st.session_state.pop('qr_buffer', None)
+# Only update if a valid county is selected
+if selected_county != "-- Select County --":  # ← ADD THIS CHECK
+    if selected_county != st.session_state['selected_county']:
+        st.session_state['selected_county'] = selected_county
+        st.session_state.pop('qr_generated', None)
+        st.session_state.pop('qr_buffer', None)
+else:  # ← ADD THIS
+    st.session_state['selected_county'] = None  # ← ADD THIS
 
 # Persona selection
 persona_options = ["SME / Factory", "Clinic / Cold-Chain", "Telecom Site", "Household"]
 persona = st.sidebar.selectbox(
     "👤 Select Your Profile",
-    options=persona_options,
-    index=persona_options.index(st.session_state['selected_persona'])
+    options=["-- Select Profile --"] + persona_options,  # ← ADD THIS
+    index=0 if st.session_state['selected_persona'] is None else persona_options.index(st.session_state['selected_persona']) + 1  # ← CHANGE THIS
 )
 
-if persona != st.session_state['selected_persona']:
-    st.session_state['selected_persona'] = persona
-    st.session_state.pop('qr_generated', None)
-    st.session_state.pop('qr_buffer', None)
+# Only update if a valid persona is selected
+if persona != "-- Select Profile --":  # ← ADD THIS CHECK
+    if persona != st.session_state['selected_persona']:
+        st.session_state['selected_persona'] = persona
+        st.session_state.pop('qr_generated', None)
+        st.session_state.pop('qr_buffer', None)
+else:  # ← ADD THIS
+    st.session_state['selected_persona'] = None  # ← ADD THIS
 
 # Dark mode toggle
 st.sidebar.markdown("---")
 dark_mode = st.sidebar.checkbox("🌙 Dark Mode", value=True)
 st.markdown(dark_mode_css if dark_mode else light_mode_css, unsafe_allow_html=True)
 
-# Share section
-st.sidebar.markdown("---")
-st.sidebar.markdown("### 📤 Share this Forecast")
+# Share section (only show if both county and persona are selected)
+if st.session_state['selected_county'] and st.session_state['selected_persona']:
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("### 📤 Share this Forecast")
 
-shareable_url = get_shareable_url(selected_county, persona)
+    shareable_url = get_shareable_url(selected_county, persona)
 
-st.sidebar.text_input(
-    "Shareable Link:",
-    value=shareable_url,
-    key="share_url",
-    label_visibility="collapsed"
-)
-st.sidebar.caption("👆 Copy this link to share")
+    st.sidebar.text_input(
+        "Shareable Link:",
+        value=shareable_url,  # ← NOW IT'S INSIDE THE IF
+        key="share_url",
+        label_visibility="collapsed"
+    )
+    st.sidebar.caption("👆 Copy this link to share")
 
-# QR Code generation
-col1, col2 = st.sidebar.columns(2)
+    # QR Code generation
+    col1, col2 = st.sidebar.columns(2)
 
-with col1:
-    if st.button("📱 Generate QR", use_container_width=True):
-        current_url = get_shareable_url(selected_county, persona)
-        st.session_state['qr_buffer'] = generate_qr_code(current_url)
-        st.session_state['qr_generated'] = True
-        st.rerun()
-
-with col2:
-    if st.session_state.get('qr_generated'):
-        if st.button("❌ Clear", use_container_width=True):
-            st.session_state.pop('qr_generated', None)
-            st.session_state.pop('qr_buffer', None)
+    with col1:
+        if st.button("📱 Generate QR", use_container_width=True):
+            current_url = get_shareable_url(selected_county, persona)
+            st.session_state['qr_buffer'] = generate_qr_code(current_url)
+            st.session_state['qr_generated'] = True
             st.rerun()
 
-# Display QR code
-if st.session_state.get('qr_generated') and st.session_state.get('qr_buffer'):
-    st.sidebar.image(st.session_state['qr_buffer'], use_container_width=True)
-    st.sidebar.caption(f"📍 {selected_county.title()} | 👤 {persona}")
-    
-    st.sidebar.download_button(
-        label="💾 Download QR",
-        data=BytesIO(st.session_state['qr_buffer'].getvalue()),
-        file_name=f"gridsense_{selected_county}_{persona.replace(' ', '_').replace('/', '_')}.png",
-        mime="image/png",
-        use_container_width=True
-    )
+    with col2:
+        if st.session_state.get('qr_generated'):
+            if st.button("❌ Clear", use_container_width=True):
+                st.session_state.pop('qr_generated', None)
+                st.session_state.pop('qr_buffer', None)
+                st.rerun()
 
+    # Display QR code
+    if st.session_state.get('qr_generated') and st.session_state.get('qr_buffer'):
+        st.sidebar.image(st.session_state['qr_buffer'], use_container_width=True)
+        st.sidebar.caption(f"📍 {selected_county.title()} | 👤 {persona}")
+        
+        st.sidebar.download_button(
+            label="💾 Download QR",
+            data=BytesIO(st.session_state['qr_buffer'].getvalue()),
+            file_name=f"gridsense_{selected_county}_{persona.replace(' ', '_').replace('/', '_')}.png",
+            mime="image/png",
+            use_container_width=True
+        )
+# ← THE IF STATEMENT ENDS HERE
+
+st.sidebar.markdown("---")
+st.sidebar.info(
+    "GridSense uses machine learning to predict power grid stress "
+    "48 hours ahead, helping you plan and prepare for potential outages."
+)
 st.sidebar.markdown("---")
 st.sidebar.info(
     "GridSense uses machine learning to predict power grid stress "
