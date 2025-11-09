@@ -1,0 +1,96 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IDE
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+wandb/
+mlruns/
+
+# ========================================
+# PROJECT SPECIFIC - BLOCK LARGE FILES
+# ========================================
+
+# Block large data files (but allow specific small ones below)
+data/
+Data/raw/
+Data/processed/
+Data/Weather/
+Data/Power Grid and Infrastructure/
+
+# Block large CSVs specifically
+Data/final_df.csv
+data/final_df.csv
+Data/Weather/era5_cleaned.csv
+
+# Block large geospatial files
+*.gpkg
+*transmission-lines*.json
+
+# Block media files
+*.mp4
+*.avi
+*.zip
+*.tar.gz
+*.rar
+
+# ========================================
+# ALLOW THESE SPECIFIC FILES FOR STREAMLIT
+# ========================================
+
+# Allow lite dataset
+!Data/final_df_lite.csv
+
+# Allow model files (they're needed!)
+!models/*.pkl
+!models/*.joblib
+
+# Allow streamlit data
+!streamlit_app/
+!streamlit_app/data/
+!streamlit_app/data/*.json
+
+# Allow config files
+!config.json
+!requirements.txt
+!app.py
