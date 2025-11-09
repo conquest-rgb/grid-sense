@@ -1,0 +1,167 @@
+# config/config.yaml
+# ============================================================================
+# CONFIGURATION FILE - Power Outage Risk Prediction System
+# ============================================================================
+
+# Model Configuration
+model:
+  version: "20250108_1430"  # Update with your model version
+  threshold: 0.28
+  models_dir: "models"
+  
+# Feature Configuration
+features:
+  categorical:
+    - county
+    - season_first
+    - area_type
+    - is_holiday_first
+  
+  # Add all your numerical features here
+  numerical:
+    # Weather
+    - cape_mean_6h_mean
+    - cape_mean_12h_mean
+    - cape_mean_24h_mean
+    - wind_mean_6h_mean
+    - wind_mean_12h_mean
+    - wind_mean_24h_mean
+    - wind_max_6h_max
+    - wind_max_12h_max
+    - wind_max_24h_max
+    - cloud_mean_6h_mean
+    - cloud_mean_12h_mean
+    - cloud_mean_24h_mean
+    - total_precipitation_mm_mean
+    - total_precipitation_mm_max
+    - storm_index
+    # Weather lags
+    - wind_max_lag_24h
+    - cape_lag_24h
+    # Weather rolling
+    - precip_rolling_sum_24h
+    - wind_gust_rolling_max_6h
+    # NDVI
+    - ndvi_mean
+    - ndvi_std
+    - ndvi_min
+    - ndvi_max
+    - ndvi_mean_lag_24h
+    # Grid
+    - transformer_count_per_county
+    - substation_count_per_county
+    - transformers_per_100k
+    - substations_per_100k
+    # Outage history
+    - outage_lag_1h
+    - outage_lag_6h
+    - outage_lag_24h
+    - outage_last_24h
+    - outage_last_7d
+    # Temporal
+    - hour_of_day
+    - hour_sin
+    - hour_cos
+    - month
+    - weekday
+    - is_weekend
+    # Population
+    - population
+    - area_km2
+    - density_per_km2
+
+# Data Pipeline Configuration
+data_pipeline:
+  update_frequency_hours: 1
+  weather_api_url: "https://api.open-meteo.com/v1/forecast"
+  kplc_scraper_url: "https://kplc.co.ke/category/view/50/planned-power-interruptions"
+  
+# API Configuration
+api:
+  host: "0.0.0.0"
+  port: 8000
+  reload: false  # Set to true only in development
+  workers: 4
+  
+# Dashboard Configuration
+dashboard:
+  host: "0.0.0.0"
+  port: 8501
+  cache_ttl_minutes: 60
+  
+# Alerting Tiers
+alert_tiers:
+  critical: 0.05  # Top 5%
+  high: 0.10      # Top 10%
+  medium: 0.20    # Top 20%
+
+# Counties (47 Kenya counties)
+counties:
+  - Baringo
+  - Bomet
+  - Bungoma
+  - Busia
+  - Elgeyo-Marakwet
+  - Embu
+  - Garissa
+  - Homa Bay
+  - Isiolo
+  - Kajiado
+  - Kakamega
+  - Kericho
+  - Kiambu
+  - Kilifi
+  - Kirinyaga
+  - Kisii
+  - Kisumu
+  - Kitui
+  - Kwale
+  - Laikipia
+  - Lamu
+  - Machakos
+  - Makueni
+  - Mandera
+  - Marsabit
+  - Meru
+  - Migori
+  - Mombasa
+  - Murang'a
+  - Nairobi
+  - Nakuru
+  - Nandi
+  - Narok
+  - Nyamira
+  - Nyandarua
+  - Nyeri
+  - Samburu
+  - Siaya
+  - Taita-Taveta
+  - Tana River
+  - Tharaka-Nithi
+  - Trans Nzoia
+  - Turkana
+  - Uasin Gishu
+  - Vihiga
+  - Wajir
+  - West Pokot
+
+# Logging
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/app.log"
+  max_bytes: 10485760  # 10MB
+  backup_count: 5
+
+# Monitoring
+monitoring:
+  enabled: true
+  metrics_port: 9090
+  check_interval_minutes: 5
+  
+# Performance Thresholds
+thresholds:
+  max_prediction_time_ms: 2000
+  max_memory_usage_percent: 80
+  min_pr_auc: 0.45  # Alert if drops below
+  min_recall_at_5pct: 0.40
