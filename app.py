@@ -79,7 +79,7 @@ def load_models_and_config():
 
 @st.cache_data(ttl=3600)
 def load_data():
-    df = pd.read_csv('Data/final_df.csv')
+    df = pd.read_csv('data/final_df_lite.csv')
     df['hour'] = pd.to_datetime(df['hour'], errors='coerce')
     return df
 
