@@ -107,11 +107,8 @@ def generate_qr_code(url):
 
 def get_shareable_url(county, persona):
     """Generate shareable URL with query parameters"""
-    persona_encoded = persona.replace(' ', '_').replace('/', '%2F')
-    public_url = "https://grid-sense-f4afwaj8mzevl8zuwtp6bnn.streamlit.app"
-    return f"{public_url}/?county={county}&persona={persona_encoded}"
-
-
+    return "https://grid-sense-f4afwaj8mzevl8zuwtp6bnn.streamlit.app"
+    
 def get_county_forecast(county, final_df, model, hours_ahead=48):
     """Generate forecast for a specific county"""
     county_data = final_df[final_df['county'] == county].copy()
