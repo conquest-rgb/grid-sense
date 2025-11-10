@@ -107,18 +107,9 @@ def generate_qr_code(url):
 
 def get_shareable_url(county, persona):
     """Generate shareable URL with query parameters"""
-    base_url = st.get_option("browser.serverAddress")
-    port = st.get_option("browser.serverPort")
-    
     persona_encoded = persona.replace(' ', '_').replace('/', '%2F')
-    
-    # Check if deployed or local
-    if not base_url or base_url == "localhost" or base_url == "0.0.0.0":
-        return f"http://localhost:8501/?county={county}&persona={persona_encoded}"
-    else:
-        # Use hard-coded Streamlit Cloud URL
-        public_url = "https://grid-sense-f4afwaj8mzevl8zuwtp6bnn.streamlit.app"
-        return f"{public_url}/?county={county}&persona={persona_encoded}"
+    public_url = "https://grid-sense-f4afwaj8mzevl8zuwtp6bnn.streamlit.app"
+    return f"{public_url}/?county={county}&persona={persona_encoded}"
 
 
 def get_county_forecast(county, final_df, model, hours_ahead=48):
