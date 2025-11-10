@@ -27,6 +27,12 @@ plotly>=5.14.0
 streamlit>=1.28.0
 streamlit-folium>=0.15.0
 
+# QR Code Generation
+qrcode>=7.4.0
+pillow>=10.0.0
+
+# Web Scraping & Data Collection
+beautifulsoup4>=4.12.0
 # Web Scraping & Data Collection
 beautifulsoup4>=4.12.0
 requests>=2.31.0
