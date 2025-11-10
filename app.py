@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 import qrcode
 from io import BytesIO
 import warnings
-warnings.filterwarnings('ignore')  
+warnings.filterwarnings('ignore')
 
 
 # PAGE CONFIGURATION
@@ -79,7 +79,7 @@ def load_models_and_config():
 
 @st.cache_data(ttl=3600)
 def load_data():
-    df = pd.read_csv('Data/final_df_lite.csv')
+    df = pd.read_csv('data/final_df_lite.csv')
     df['hour'] = pd.to_datetime(df['hour'], errors='coerce')
     return df
 
@@ -116,11 +116,9 @@ def get_shareable_url(county, persona):
     if not base_url or base_url == "localhost" or base_url == "0.0.0.0":
         return f"http://localhost:8501/?county={county}&persona={persona_encoded}"
     else:
-        # Deployed app URL
-        if port and port != 80 and port != 443:
-            return f"https://{base_url}:{port}/?county={county}&persona={persona_encoded}"
-        else:
-            return f"https://{base_url}/?county={county}&persona={persona_encoded}"
+        # Use hard-coded Streamlit Cloud URL
+        public_url = "https://grid-sense-f4afwaj8mzevl8zuwtp6bnn.streamlit.app"
+        return f"{public_url}/?county={county}&persona={persona_encoded}"
 
 
 def get_county_forecast(county, final_df, model, hours_ahead=48):
@@ -252,7 +250,7 @@ if 'selected_county' not in st.session_state:
         url_county = query_params['county'].lower()
         st.session_state['selected_county'] = url_county if url_county in counties else None
     else:
-        st.session_state['selected_county'] = None  # ← CHANGED TO None
+        st.session_state['selected_county'] = None
 
 if 'selected_persona' not in st.session_state:
     persona_options = ["SME / Factory", "Clinic / Cold-Chain", "Telecom Site", "Household"]
@@ -260,7 +258,7 @@ if 'selected_persona' not in st.session_state:
         url_persona = query_params['persona'].replace('_', ' ').replace('%2F', '/')
         st.session_state['selected_persona'] = url_persona if url_persona in persona_options else None
     else:
-        st.session_state['selected_persona'] = None  # ← CHANGED TO None
+        st.session_state['selected_persona'] = None
 
 
 # ==================== SIDEBAR ====================
@@ -272,35 +270,35 @@ st.sidebar.markdown("---")
 # County selection
 selected_county = st.sidebar.selectbox(
     "🗺️ Select County",
-    options=["-- Select County --"] + counties,  # ← ADD THIS
-    index=0 if st.session_state['selected_county'] is None else counties.index(st.session_state['selected_county']) + 1  # ← CHANGE THIS
+    options=["-- Select County --"] + counties,
+    index=0 if st.session_state['selected_county'] is None else counties.index(st.session_state['selected_county']) + 1
 )
 
 # Only update if a valid county is selected
-if selected_county != "-- Select County --":  # ← ADD THIS CHECK
+if selected_county != "-- Select County --":
     if selected_county != st.session_state['selected_county']:
         st.session_state['selected_county'] = selected_county
         st.session_state.pop('qr_generated', None)
         st.session_state.pop('qr_buffer', None)
-else:  # ← ADD THIS
-    st.session_state['selected_county'] = None  # ← ADD THIS
+else:
+    st.session_state['selected_county'] = None
 
 # Persona selection
 persona_options = ["SME / Factory", "Clinic / Cold-Chain", "Telecom Site", "Household"]
 persona = st.sidebar.selectbox(
     "👤 Select Your Profile",
-    options=["-- Select Profile --"] + persona_options,  # ← ADD THIS
-    index=0 if st.session_state['selected_persona'] is None else persona_options.index(st.session_state['selected_persona']) + 1  # ← CHANGE THIS
+    options=["-- Select Profile --"] + persona_options,
+    index=0 if st.session_state['selected_persona'] is None else persona_options.index(st.session_state['selected_persona']) + 1
 )
 
 # Only update if a valid persona is selected
-if persona != "-- Select Profile --":  # ← ADD THIS CHECK
+if persona != "-- Select Profile --":
     if persona != st.session_state['selected_persona']:
         st.session_state['selected_persona'] = persona
         st.session_state.pop('qr_generated', None)
         st.session_state.pop('qr_buffer', None)
-else:  # ← ADD THIS
-    st.session_state['selected_persona'] = None  # ← ADD THIS
+else:
+    st.session_state['selected_persona'] = None
 
 # Dark mode toggle
 st.sidebar.markdown("---")
@@ -312,11 +310,11 @@ if st.session_state['selected_county'] and st.session_state['selected_persona']:
     st.sidebar.markdown("---")
     st.sidebar.markdown("### 📤 Share this Forecast")
 
-    shareable_url = get_shareable_url(selected_county, persona)
+    shareable_url = get_shareable_url(st.session_state['selected_county'], st.session_state['selected_persona'])
 
     st.sidebar.text_input(
         "Shareable Link:",
-        value=shareable_url,  # ← NOW IT'S INSIDE THE IF
+        value=shareable_url,
         key="share_url",
         label_visibility="collapsed"
     )
@@ -327,7 +325,7 @@ if st.session_state['selected_county'] and st.session_state['selected_persona']:
 
     with col1:
         if st.button("📱 Generate QR", use_container_width=True):
-            current_url = get_shareable_url(selected_county, persona)
+            current_url = get_shareable_url(st.session_state['selected_county'], st.session_state['selected_persona'])
             st.session_state['qr_buffer'] = generate_qr_code(current_url)
             st.session_state['qr_generated'] = True
             st.rerun()
@@ -342,16 +340,15 @@ if st.session_state['selected_county'] and st.session_state['selected_persona']:
     # Display QR code
     if st.session_state.get('qr_generated') and st.session_state.get('qr_buffer'):
         st.sidebar.image(st.session_state['qr_buffer'], use_container_width=True)
-        st.sidebar.caption(f"📍 {selected_county.title()} | 👤 {persona}")
+        st.sidebar.caption(f"📍 {st.session_state['selected_county'].title()} | 👤 {st.session_state['selected_persona']}")
         
         st.sidebar.download_button(
             label="💾 Download QR",
             data=BytesIO(st.session_state['qr_buffer'].getvalue()),
-            file_name=f"gridsense_{selected_county}_{persona.replace(' ', '_').replace('/', '_')}.png",
+            file_name=f"gridsense_{st.session_state['selected_county']}_{st.session_state['selected_persona'].replace(' ', '_').replace('/', '_')}.png",
             mime="image/png",
             use_container_width=True
         )
-# ← THE IF STATEMENT ENDS HERE
 
 st.sidebar.markdown("---")
 st.sidebar.info(
@@ -366,6 +363,15 @@ st.sidebar.info(
 
 
 # ==================== MAIN CONTENT ====================
+
+# Check if both county and persona are selected
+if not st.session_state['selected_county'] or not st.session_state['selected_persona']:
+    st.info("📍 Please select a county and profile from the sidebar to view the forecast.")
+    st.stop()
+
+# Now we can safely use these variables
+selected_county = st.session_state['selected_county']
+persona = st.session_state['selected_persona']
 
 st.title("⚡ GridSense: Power Outage Risk Forecaster")
 st.markdown(f"### 48-Hour Forecast for **{selected_county.title()}** County")
