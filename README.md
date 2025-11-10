@@ -1,4 +1,4 @@
-[# grid-sense
+# grid-sense
 Power outage forecasting for Kenya
 # GridSense: Short-Horizon Power Outage Forecasting
 
@@ -308,4 +308,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 ** GridSense - Powering Reliability Through Prediction **
-](https://grid-sense-f4afwaj8mzevl8zuwtpbnn.streamlit.app/)
